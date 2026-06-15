@@ -314,9 +314,9 @@ export default function InflationCalculator() {
       `}</style>
 
       {/* HEADER */}
-      <header style={{ borderBottom: "1px solid #0d1f35", padding: "18px 20px",
+      <header style={{ borderBottom: "1px solid #0d1f35", padding: "18px 40px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        maxWidth: 1200, margin: "0 auto" }}>
+        width: "100%", maxWidth: "100%" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: accentColor,
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -363,7 +363,7 @@ export default function InflationCalculator() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px" }}>
+      <div style={{ width: "100%", maxWidth: "100%", padding: "0 40px" }}>
         <div className="main-grid">
 
           {/* ─── LEFT: CONTROLS ─── */}
