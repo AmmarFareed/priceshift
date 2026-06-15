@@ -154,29 +154,36 @@ function CurrencyToggle({ currency, onChange }) {
 
 function NumberInput({ value, onChange, prefix }) {
   const [raw, setRaw] = useState(String(value));
+  const [isFocused, setIsFocused] = useState(false);
+
   useEffect(() => { setRaw(String(value)); }, [value]);
+
   function commit() {
     const parsed = parseFloat(raw.replace(/[^0-9.]/g, ""));
     if (!isNaN(parsed) && parsed > 0) { onChange(parsed); setRaw(String(parsed)); }
     else setRaw(String(value));
+    setIsFocused(false);
   }
+
   return (
-    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+    <div style={{ position: "relative", display: "flex", alignItems: "center", width: "100%" }}>
       {prefix && (
         <span style={{ position: "absolute", left: 14, color: "#94a3b8", fontSize: 16,
           fontFamily: "'DM Mono', monospace", pointerEvents: "none", zIndex: 1 }}>{prefix}</span>
       )}
       <input type="text" inputMode="decimal" value={raw}
         onChange={e => setRaw(e.target.value)}
-        onBlur={commit} onKeyDown={e => e.key === "Enter" && commit()}
+        onBlur={commit} 
+        onFocus={() => setIsFocused(true)}
+        onKeyDown={e => e.key === "Enter" && commit()}
         style={{
           width: "100%", padding: prefix ? "13px 13px 13px 34px" : "13px",
-          background: "#080f1e", border: "1.5px solid #1e3a5f", borderRadius: 10,
+          background: "#080f1e", 
+          border: isFocused ? "1.5px solid #4f7cff" : "1.5px solid #1e3a5f", 
+          borderRadius: 10,
           color: "#e2e8f0", fontSize: 15, fontFamily: "'DM Mono', monospace", outline: "none",
           transition: "border-color 0.2s",
         }}
-        onFocus={e => e.target.style.borderColor = "#4f7cff"}
-        onBlur2={e => e.target.style.borderColor = "#1e3a5f"}
       />
     </div>
   );
@@ -276,7 +283,7 @@ export default function InflationCalculator() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#060d1a", fontFamily: "'Inter', system-ui, sans-serif", color: "#e2e8f0" }}>
+    <div style={{ minHeight: "100vh", background: "#060d1a", fontFamily: "'Inter', system-ui, sans-serif", color: "#e2e8f0", paddingBottom: "40px" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -287,16 +294,29 @@ export default function InflationCalculator() {
         .tab-btn:hover:not(.active) { color: #94a3b8; }
         .cat-chip { border: 1.5px solid #1e293b; border-radius: 999px; padding: 5px 12px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.18s; background: none; font-family: inherit; white-space: nowrap; }
         .cat-chip:hover { border-color: #334155; }
-        .card { background: #0f172a; border: 1px solid #1e3a5f; border-radius: 16px; padding: 22px; }
+        .card { background: #0f172a; border: 1px solid #1e3a5f; border-radius: 16px; padding: 22px; width: 100%; }
         @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
         .anim { animation: fadeUp 0.38s ease both; }
-        @media(max-width:768px) { .main-grid { flex-direction: column !important; } }
+        
+        /* Clean Responsive Layout Matrix */
+        .main-grid { 
+          display: grid; 
+          grid-template-columns: 320px 1fr; 
+          gap: 24px; 
+          align-items: start; 
+        }
+        @media(max-width: 900px) { 
+          .main-grid { 
+            grid-template-columns: 1fr; 
+            gap: 16px;
+          } 
+        }
       `}</style>
 
       {/* HEADER */}
-      <header style={{ borderBottom: "1px solid #0d1f35", padding: "18px 32px",
+      <header style={{ borderBottom: "1px solid #0d1f35", padding: "18px 20px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        maxWidth: 1160, margin: "0 auto" }}>
+        maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: accentColor,
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -316,8 +336,8 @@ export default function InflationCalculator() {
       </header>
 
       {/* HERO */}
-      <div style={{ textAlign: "center", padding: "40px 32px 28px", maxWidth: 680, margin: "0 auto" }}>
-        <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(28px, 5vw, 48px)",
+      <div style={{ textAlign: "center", padding: "40px 20px 28px", maxWidth: 680, margin: "0 auto" }}>
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(28px, 5vw, 44px)",
           fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em",
           background: "linear-gradient(135deg, #e2e8f0 0%, #64748b 100%)",
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
@@ -343,11 +363,11 @@ export default function InflationCalculator() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px 80px" }}>
-        <div className="main-grid" style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px" }}>
+        <div className="main-grid">
 
           {/* ─── LEFT: CONTROLS ─── */}
-          <div style={{ flex: "0 0 300px", display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%" }}>
 
             {/* Amount */}
             <div className="card">
@@ -400,7 +420,7 @@ export default function InflationCalculator() {
             </div>
 
             {/* Mini stats */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, width: "100%" }}>
               {[
                 { label: "Total inflation", value: `${totalChange > 0 ? "+" : ""}${totalChange.toFixed(1)}%`, color: totalChange > 0 ? "#10b981" : "#ef4444" },
                 { label: "Annual avg rate", value: `${annualRate.toFixed(2)}%`, color: accentColor },
@@ -419,7 +439,7 @@ export default function InflationCalculator() {
           </div>
 
           {/* ─── RIGHT: RESULTS + CHART ─── */}
-          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", minWidth: 0 }}>
 
             {/* BIG RESULT */}
             <div className="card" style={{ position: "relative", overflow: "hidden" }}>
@@ -623,7 +643,7 @@ export default function InflationCalculator() {
             )}
 
             {/* SHARE */}
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 4 }}>
               <button onClick={handleShare} style={{
                 background: accentColor, border: "none", borderRadius: 10,
                 color: "#060d1a", fontFamily: "inherit", fontSize: 13, fontWeight: 700,
@@ -640,20 +660,20 @@ export default function InflationCalculator() {
 
         {/* METHODOLOGY FOOTER */}
         <div style={{ marginTop: 40, padding: "22px 26px", background: "#080f1e",
-          border: "1px solid #0f172a", borderRadius: 16, display: "flex", gap: 28, flexWrap: "wrap" }}>
-          <div style={{ flex: 1, minWidth: 180 }}>
+          border: "1px solid #1e293b", borderRadius: 16, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 24 }}>
+          <div>
             <div style={{ color: "#334155", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6 }}>USD Source</div>
             <div style={{ color: "#475569", fontSize: 11, lineHeight: 1.6 }}>
               U.S. Bureau of Labor Statistics CPI-U, series CUUR0000SA0. Annual averages, not seasonally adjusted.
             </div>
           </div>
-          <div style={{ flex: 1, minWidth: 180 }}>
+          <div>
             <div style={{ color: "#334155", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6 }}>LKR Source</div>
             <div style={{ color: "#475569", fontSize: 11, lineHeight: 1.6 }}>
               IMF / World Bank annual CPI % change data for Sri Lanka (1960–2024). Index rebased to 100 in 1960. 2022 figure reflects the Sri Lankan economic crisis peak.
             </div>
           </div>
-          <div style={{ flex: 1, minWidth: 180 }}>
+          <div>
             <div style={{ color: "#334155", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 6 }}>Formula</div>
             <div style={{ color: "#475569", fontSize: 11, lineHeight: 1.6, fontFamily: "'DM Mono', monospace" }}>
               Adjusted = Amount × (CPI_to / CPI_from) × CategoryMultiplier
